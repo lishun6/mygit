@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    地区选择:
+    <select name="" id="province">
+        <option value="">请选择省份</option>
+    </select>
+    <select name="" id="city">
+        <option value="">请选择城市</option>
+    </select>
+    <select name="" id="area">
+        <option value="">请选择地区</option>
+    </select>
+   称呼：
+    <input type="text" name="" id="name">
+    爱好：<textarea name="" id=""></textarea>
+    <br>
+   <button>提交</button>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        const province = document.querySelector('#province');
+        axios({
+            method:'get',
+            url:"http://hmajax.itheima.net/api/province",         
+        }).then(
+            res=>{
+                console.log(res);
+                const arr=res.data.list;
+                const str=arr.map(item=>`<option value="${item}">${item}</option>`).join('');
+                province.innerHTML=`<option value="">省份</option>`+str;   
+            }
+        )
+        province.addEventListener('change',async e=>{
+                console.log(e.target.value);
+             const result=await axios({
+                    method:'get',
+                    url:"http://hmajax.itheima.net/api/city",
+                    params:{
+                        pname:e.target.value
+                    }
+                })
+                // console.log(result);
+               const str1= result.data.list.map(item=>{
+                    return `<option value="${item}">${item}</option>` 
+                }).join('');
+                document.querySelector('#city').innerHTML=`<option value="">请选择城市</option>`+str1;
+                document.querySelector('#city').addEventListener('change',e=>{
+                    axios({
+                           method:'get',
+                           url:"http://hmajax.itheima.net/api/area",
+                           params:{
+                            pname:province.value,
+                               cname:e.target.value
+                           }
+
+                    }).then(
+                        res=>{
+                            // console.log(res);
+                            const str2=res.data.list.map(item=>{
+                                return `<option value="${item}">${item}</option>`
+                            }).join('');
+                            document.querySelector('#area').innerHTML=`<option value="">请选择地区</option>`+str2;
+                        }
+                    )
+                })
+        })
+        document.querySelector('button').addEventListener('click',()=>{
+             axios({
+                method:'post',
+                url:"http://hmajax.itheima.net/api/feedback",
+                data:{
+                    province:province.value,
+                    city:document.querySelector('#city').value,
+                    area:document.querySelector('#area').value,
+                    nickname:document.querySelector('#name').value,
+                    feedback:document.querySelector('textarea').value
+                }
+            }).then(res=>{
+                console.log(res);
+                alert(res.data.message);
+            }).catch(err=>{
+                console.log(err);
+                alert(err.response.data.message);
+            })
+          
+        })
+    </script>
+</body>
+</html>

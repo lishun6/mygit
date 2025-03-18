@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+   <input type="file" class="f">
+   <img src="" alt="">
+   <div class="box">
+      <div class="in">
+
+      </div>
+
+   </div>
+    
+</body>
+<style>
+    .box{
+        width: 400px;
+        height: 200px;
+        border: 1px solid red;
+        position: relative;
+        background-color: aqua;
+    }
+    .in{
+        width: 100px;
+        height: 100px;
+        border: 1px solid rgb(23, 13, 139);      
+        background-color: blue;  
+    }
+    .box:hover .in{
+        background-color: red;
+    }
+    </style>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    const file = document.querySelector('.f');
+    file.addEventListener('change',function(e){
+       const file1=e.target.files[0];
+     console.log(file1);
+     const formData = new FormData();
+     formData.append('img',file1);
+     axios({
+        method:'post',
+        url:'http://hmajax.itheima.net/api/uploadimg',
+        data:formData
+     }).then(res=>{
+        console.log(res.data.data.url);
+        const img = document.querySelector('img');
+        img.src = res.data.data.url;
+
+     })
+
+    })
+    
+</script>
+
+</html>
